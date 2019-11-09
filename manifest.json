@@ -1,0 +1,26 @@
+{
+	"manifest_version": 2,
+
+	"name": "Google Keep To Clipboard",
+	"version": "0.1",
+	"description": "Copy the contents of your Google Keep notes to the clipboard in various formats.",
+	"applications":	{
+		"gecko": {
+			"id": "google-keep-to-clipboard@cheap-glitch.org"
+		}
+	},
+	"icons": {
+		"48": "icon.svg",
+		"96": "icon.svg"
+	},
+
+	"developer" : {
+		"name": "cheap glitch",
+		"url": "https://github.com/cheap-glitch"
+	},
+
+	"content_scripts": [{
+		"matches": ["*://keep.google.com/*"],
+		"js": ["google-keep-to-clipboard.js"]
+	}]
+}
