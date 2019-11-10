@@ -9,7 +9,7 @@
 Once the extension is installed, simply head to the Google Keep page and hover
 on the bottom of a note to make the toolbar appear. Click on the three little
 dots to open a contextual menu. You should see a new option at the bottom,
-titled *Copy to clipboard as…*. Hover on it to make a submenu appear.
+titled *Copy to clipboard as…* Hover on it to make a submenu appear.
 
 Click on a formatting option, and that's it! You can now paste the contents of
 the note anywhere.
