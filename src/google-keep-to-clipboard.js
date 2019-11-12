@@ -26,25 +26,6 @@
 
 (function()
 {
-	// {{{ Kaomojis
-	const kaoSuccess = [
-		'✧*｡٩(ˊᗜˋ*)و✧*｡',
-		'o(≧∇≦o)',
-		'」(￣▽￣」)',
-		'(๑˃̵ᴗ˂̵)و',
-		'(•́⌄•́๑)૭✧',
-		'＼\\ ٩( ᐛ )و /／',
-		'( ﾉ^ω^)ﾉﾟ',
-		'(〜￣▽￣)〜',
-		'ᕕ( ᐛ )ᕗ',
-		'(*＾▽＾)／',
-	];
-	const kaoError = [
-		'°(≧Д≦)°',
-		'ʅฺ(・ω・;)ʃฺ',
-	];
-	// }}}
-
 	let targetNote	    = null;
 	let entryAdded	    = false;
 	let entriesDisabled = false;
@@ -58,33 +39,58 @@
 	// Wait for the contextual menu to be created in the <body> element to insert the new entries in it
 	(new MutationObserver(function()
 	{
-		/**
-		 * Create the new menu entries
-		 * -------------------------------------------------------------
-		 */
+		// Prevent the entries from being added twice
 		const lastEntry = document.getElementById(':9');
 		if (entryAdded || !lastEntry) return;
-
-		const menuEntryTextClass   = lastEntry.children.item(0).className;
-		const submenuEntryTextAttr = `class="${menuEntryTextClass}" style="padding-left: 20px;"`;
-		const submenuEntryAttr	   = `class="google-keep-to-clipboard-submenu-entry ${lastEntry.className}"
-					      role="menuitem"
-					      style="user-select: none;"`;
-
-		lastEntry.insertAdjacentHTML(
-			'afterend',
-			`
-			<div class="${lastEntry.className}" style="padding: 0; border: none; cursor: default; user-select: none;" role="menuitem">
-				<div class="${menuEntryTextClass}" style="padding: 5px 10px 5px 17px;">Copy to clipboard as&hellip;</div>
-			</div>
-			<div ${submenuEntryAttr} data-format="plain"><div ${submenuEntryTextAttr}>Plain text</div></div>
-			<div ${submenuEntryAttr} data-format="md"><div ${submenuEntryTextAttr}>Markdown</div></div>
-			<div ${submenuEntryAttr} data-format="zim"><div ${submenuEntryTextAttr}>Zim markup</div></div>
-			<div ${submenuEntryAttr} data-format="html"><div ${submenuEntryTextAttr}>HTML</div></div>
-			<div ${submenuEntryAttr} data-format="csv"><div ${submenuEntryTextAttr}>CSV</div></div>
-			`
-		);
 		entryAdded = true;
+
+		/**
+		 * Create and insert the new menu entries
+		 * -------------------------------------------------------------
+		 */
+		const formats = {
+			csv:	'CSV',
+			html:	'HTML',
+			zim:	'Zim markup',
+			md:	'Markdown',
+			plain:	'Plain text',
+		};
+
+		// Insert an entry for every format option
+		Object.keys(formats).forEach(_key => lastEntry.insertAdjacentElement('afterend', createNewMenuEntry(
+			{
+				'role':  	'menuitem',
+				'class':	`google-keep-to-clipboard-submenu-entry ${lastEntry.className}`,
+				'style':	{ 'user-select': 'none' },
+				'data-format':	_key,
+			},
+			{
+				'class':	lastEntry.children.item(0).className,
+				'style':	{ 'padding-left': '20px' }
+			},
+			formats[_key]
+		)));
+
+		// Insert the "header"
+		lastEntry.insertAdjacentElement('afterend', createNewMenuEntry(
+			{
+				'role':  'menuitem',
+				'class': lastEntry.className,
+				'style': {
+					'padding':	0,
+					'border':	'none',
+					'cursor':	'default',
+					'user-select':	'none',
+				}
+			},
+			{
+				'class': lastEntry.children.item(0).className,
+				'style': {
+					'padding': '5px 10px 5px 17px'
+				}
+			},
+			'Copy to clipboard as…'
+		));
 
 		/**
 		 * Add some event listeners on the new entries
@@ -201,6 +207,25 @@
 				// Copy the formatted contents of the note to the clipboard
 				copyToClipboard(formattedContents);
 
+				// {{{ Kaomojis
+				const kaoSuccess = [
+					'✧*｡٩(ˊᗜˋ*)و✧*｡',
+					'o(≧∇≦o)',
+					'」(￣▽￣」)',
+					'(๑˃̵ᴗ˂̵)و',
+					'(•́⌄•́๑)૭✧',
+					'＼\\ ٩( ᐛ )و /／',
+					'( ﾉ^ω^)ﾉﾟ',
+					'(〜￣▽￣)〜',
+					'ᕕ( ᐛ )ᕗ',
+					'(*＾▽＾)／',
+				];
+				const kaoError = [
+					'°(≧Д≦)°',
+					'ʅฺ(・ω・;)ʃฺ',
+				];
+				// }}}
+
 				// Display a success message
 				const entryText	    = _entry.children.item(0);
 				const oldInnerText  = entryText.innerText;
@@ -249,5 +274,48 @@
 
 		// Remove the textarea
 		document.body.removeChild(ta);
+	}
+
+	/**
+	 * Create a new menu entry (two <div>, one wrapping the other)
+	 */
+	function createNewMenuEntry(_wrapperAttrs, _innerAttrs, _text)
+	{
+		const wrapper = createNewElement('div', _wrapperAttrs);
+		const inner   = createNewElement('div', _innerAttrs, _text);
+
+		wrapper.appendChild(inner);
+
+		return wrapper;
+	}
+
+	/**
+	 * Create a new DOM element
+	 */
+	function createNewElement(_type, _attrs, _textContent = null)
+	{
+		const el = document.createElement(_type);
+
+		// Set the attributes
+		Object.keys(_attrs).forEach(function(_attr)
+		{
+			let val = _attrs[_attr];
+
+			// If the attribute value is an object (used to set the 'style' attribute)
+			if (val === Object(val) && Object.prototype.toString.call(val) !== '[object Array]')
+			{
+				// Join the key-value pairs in a single string
+				val = Object.keys(val)
+					.reduce((__acc, __key) => { __acc.push(`${__key}: ${val[__key]};`); return __acc; }, [])
+					.join(' ');
+			}
+
+			el.setAttribute(_attr, val);
+		});
+
+		// Set the text content
+		if (_textContent) el.textContent = _textContent;
+
+		return el;
 	}
 })();
