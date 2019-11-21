@@ -148,14 +148,16 @@
 						// Format each line according to its type
 						formattedContents = lines.map(function(_line, _index)
 						{
+							const line = parseUrls(_line, 'md');
+
 							switch (types[_index])
 							{
-								case 'title':	return `# ${_line}`;
-								case 'task':	return `* ${_line}`;
-								case 'subtask':	return `  * ${_line}`;
+								case 'title':	return `# ${line}`;
+								case 'task':	return `* ${line}`;
+								case 'subtask':	return `  * ${line}`;
 							}
 
-							return _line;
+							return line;
 						}).join('\n');
 						break;
 
@@ -177,18 +179,20 @@
 						// Format each line according to its type
 						formattedContents = lines.map(function(_line, _index)
 						{
+							const line = parseUrls(_line, 'html');
+
 							switch (types[_index])
 							{
 								case 'title':
-									return `<h1>${_line}</h1>`;
+									return `<h1>${line}</h1>`;
 
 								case 'task':
 								case 'subtask':
 									return `<input type="checkbox" id="task-${_index}">`
-									     + `<label for="task-${_index}">${_line}</label>`;
+									     + `<label for="task-${_index}">${line}</label>`;
 							}
 
-							return `<p>${_line}</p>`;
+							return `<p>${line}</p>`;
 						}).join('\n');
 						break;
 
@@ -246,11 +250,19 @@
 	});
 
 	/**
-	 * Return the current colorscheme ('dark' or 'light')
+	 * Parse the URLs contained in a string into a specific format and return the modified string
 	 */
-	function getColorscheme()
+	function parseUrls(str, format)
 	{
-		return document.getElementById('gb').style.cssText === 'background-color: rgb(255, 255, 255);' ? 'light' : 'dark';
+		const urls = /https?:\/\/\S+?\.\S+/g;
+
+		switch (format)
+		{
+			case 'html':	return str.replace(urls, '<a href="$&">$&</a>');
+			case 'md':	return str.replace(urls, '[$&]($&)');
+
+			default:	return str;
+		}
 	}
 
 	/**
@@ -259,11 +271,13 @@
 	function copyToClipboard(_str)
 	{
 		// Create an invisible textarea containing the string to copy
-		const ta = document.createElement('textarea');
-		ta.value = _str;
-		ta.style.left = '-9999px';
-		ta.style.position = 'absolute';
-		ta.setAttribute('readonly', '');
+		const ta = createNewElement('textarea', {
+			style: {
+				position: 'absolute',
+				left:	  '-9999px',
+			},
+			readonly: true,
+		}, _str);
 
 		// Add it to the DOM
 		document.body.appendChild(ta);
@@ -301,8 +315,11 @@
 		{
 			let val = _attrs[_attr];
 
+			// If the attribute value is a boolean set to 'true', set it to an empty string
+			if (val === true) val = '';
+
 			// If the attribute value is an object (used to set the 'style' attribute)
-			if (val === Object(val) && Object.prototype.toString.call(val) !== '[object Array]')
+			else if (val === Object(val) && Object.prototype.toString.call(val) !== '[object Array]')
 			{
 				// Join the key-value pairs in a single string
 				val = Object.keys(val)
@@ -317,5 +334,13 @@
 		if (_textContent) el.textContent = _textContent;
 
 		return el;
+	}
+
+	/**
+	 * Return the current colorscheme ('dark' or 'light')
+	 */
+	function getColorscheme()
+	{
+		return document.getElementById('gb').style.cssText === 'background-color: rgb(255, 255, 255);' ? 'light' : 'dark';
 	}
 })();

@@ -6,7 +6,7 @@
 	"description": "Copy the contents of your Google Keep notes to the clipboard in various formats.",
 	"applications":	{
 		"gecko": {
-			"id": "google-keep-to-clipboard@cheap-glitch.org"
+			"id": "google-keep-to-clipboard--dev@cheap-glitch.org"
 		}
 	},
 	"icons": {
