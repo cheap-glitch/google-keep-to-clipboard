@@ -26,9 +26,8 @@
 
 (function()
 {
-	let targetNote      = null;
-	let entryAdded      = false;
-	let entriesDisabled = false;
+	let targetNote = null;
+	let entryAdded = false;
 
 	// Get all the context menu handles (the three little dots in the toolbar of each note)
 	const menuHandles = [...document.querySelectorAll('div[role="toolbar"] div[aria-label="More"]')].slice(2);
@@ -112,10 +111,6 @@
 			 */
 			_entry.addEventListener('click', function()
 			{
-				// Disable the menu entries until the copying is done
-				if (entriesDisabled) return;
-				entriesDisabled = true;
-
 				// Get all the elements in the note wrapper containing valuable text
 				const textElems = [...targetNote.getElementsByClassName('notranslate')];
 
@@ -212,19 +207,8 @@
 				copyToClipboard(formattedContents);
 
 				// Close the context menu
-				const event = new MouseEvent('click', {
-					view: window,
-					bubbles: true,
-					cancelable: true
-				});
-
-				const el        = document.body;
-				const cancelled = !el.dispatchEvent(event);
-
-				// A handler called preventDefault.
-				if (cancelled) console.log('Cancelled!');
-				// None of the handlers called preventDefault.
-				else console.log("not cancelled");
+				_entry.parentElement.setAttribute('tabindex', -1);
+				_entry.parentElement.style.display = 'none';
 			});
 		});
 	}))
