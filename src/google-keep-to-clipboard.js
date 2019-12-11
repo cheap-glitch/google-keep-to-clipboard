@@ -1,33 +1,33 @@
 
 /**
- * google-keep-to-clipboard.js
+ * google-keep-to-clipboard
  *
- * A browser extension to copy the contents of Google Keep notes into
- * the clipoard in various formats.
+ * A  browser extension  to copy  the  contents of  Google Keep  notes into  the
+ * clipoard in various formats.
  *
- * Copyright © 2019 cheap-glitch
+ * Copyright (c) 2019-present, cheap glitch
  *
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either  version 3 of the  License, or (at your  option) any later
+ * version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * This program is distributed  in the hope that it will  be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR  A PARTICULAR  PURPOSE.  See  the GNU  General  Public  License for  more
+ * details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see https://www.gnu.org/licenses.
+ * You should have received a copy of  the GNU General Public License along with
+ * this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 "use strict";
 
 (function()
 {
-	let targetNote	    = null;
-	let entryAdded	    = false;
+	let targetNote      = null;
+	let entryAdded      = false;
 	let entriesDisabled = false;
 
 	// Get all the context menu handles (the three little dots in the toolbar of each note)
@@ -49,24 +49,24 @@
 		 * -------------------------------------------------------------
 		 */
 		const formats = {
-			csv:	'CSV',
-			html:	'HTML',
-			zim:	'Zim markup',
-			md:	'Markdown',
-			plain:	'Plain text',
+			csv:    'CSV',
+			html:   'HTML',
+			zim:    'Zim markup',
+			md:     'Markdown',
+			plain:  'Plain text',
 		};
 
 		// Insert an entry for every format option
 		Object.keys(formats).forEach(_key => lastEntry.insertAdjacentElement('afterend', createNewMenuEntry(
 			{
-				'role':  	'menuitem',
-				'class':	`google-keep-to-clipboard-submenu-entry ${lastEntry.className}`,
-				'style':	{ 'user-select': 'none' },
-				'data-format':	_key,
+				'role':        'menuitem',
+				'class':       `google-keep-to-clipboard-submenu-entry ${lastEntry.className}`,
+				'style':       { 'user-select': 'none' },
+				'data-format': _key,
 			},
 			{
-				'class':	lastEntry.children.item(0).className,
-				'style':	{ 'padding-left': '20px' }
+				'class':       lastEntry.children.item(0).className,
+				'style':       { 'padding-left': '20px' }
 			},
 			formats[_key]
 		)));
@@ -77,10 +77,10 @@
 				'role':  'menuitem',
 				'class': lastEntry.className,
 				'style': {
-					'padding':	0,
-					'border':	'none',
-					'cursor':	'default',
-					'user-select':	'none',
+					'padding':      0,
+					'border':       'none',
+					'cursor':       'default',
+					'user-select':  'none',
 				}
 			},
 			{
@@ -152,9 +152,9 @@
 
 							switch (types[_index])
 							{
-								case 'title':	return `# ${line}`;
-								case 'task':	return `* ${line}`;
-								case 'subtask':	return `  * ${line}`;
+								case 'title':    return `# ${line}`;
+								case 'task':     return `* ${line}`;
+								case 'subtask':  return `  * ${line}`;
 							}
 
 							return line;
@@ -167,8 +167,8 @@
 						{
 							switch (types[_index + 1])
 							{
-								case 'task':	return `[ ] ${_line}`;
-								case 'subtask': return `\t[ ] ${_line}`;
+								case 'task':     return `[ ] ${_line}`;
+								case 'subtask':  return `\t[ ] ${_line}`;
 							}
 
 							return _line;
@@ -211,36 +211,20 @@
 				// Copy the formatted contents of the note to the clipboard
 				copyToClipboard(formattedContents);
 
-				// {{{ Kaomojis
-				const kaoSuccess = [
-					'✧*｡٩(ˊᗜˋ*)و✧*｡',
-					'o(≧∇≦o)',
-					'」(￣▽￣」)',
-					'(๑˃̵ᴗ˂̵)و',
-					'(•́⌄•́๑)૭✧',
-					'＼\\ ٩( ᐛ )و /／',
-					'( ﾉ^ω^)ﾉﾟ',
-					'(〜￣▽￣)〜',
-					'ᕕ( ᐛ )ᕗ',
-					'(*＾▽＾)／',
-				];
-				const kaoError = [
-					'°(≧Д≦)°',
-					'ʅฺ(・ω・;)ʃฺ',
-				];
-				// }}}
+				// Close the context menu
+				const event = new MouseEvent('click', {
+					view: window,
+					bubbles: true,
+					cancelable: true
+				});
 
-				// Display a success message
-				const entryText	    = _entry.children.item(0);
-				const oldInnerText  = entryText.innerText;
-				entryText.innerText = `Copied! ${kaoSuccess[Math.floor(Math.random()*kaoSuccess.length)]}`;
+				const el        = document.body;
+				const cancelled = !el.dispatchEvent(event);
 
-				// Reset the entry text after two seconds have passed
-				window.setTimeout(function()
-				{
-					entriesDisabled     = false;
-					entryText.innerText = oldInnerText;
-				}, 2000);
+				// A handler called preventDefault.
+				if (cancelled) console.log('Cancelled!');
+				// None of the handlers called preventDefault.
+				else console.log("not cancelled");
 			});
 		});
 	}))
@@ -258,10 +242,10 @@
 
 		switch (format)
 		{
-			case 'html':	return str.replace(urls, '<a href="$&">$&</a>');
-			case 'md':	return str.replace(urls, '[$&]($&)');
+			case 'html':  return str.replace(urls, '<a href="$&">$&</a>');
+			case 'md':    return str.replace(urls, '[$&]($&)');
 
-			default:	return str;
+			default:      return str;
 		}
 	}
 
@@ -273,8 +257,8 @@
 		// Create an invisible textarea containing the string to copy
 		const ta = createNewElement('textarea', {
 			style: {
-				position: 'absolute',
-				left:	  '-9999px',
+				position:  'absolute',
+				left:      '-9999px',
 			},
 			readonly: true,
 		}, _str);
