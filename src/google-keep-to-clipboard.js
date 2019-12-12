@@ -114,26 +114,44 @@
 				// Get all the elements in the note wrapper containing valuable text
 				const textElems = [...targetNote.getElementsByClassName('notranslate')];
 
-				// Get all the lines and their type (title, plain text, task or subtask)
-				const lines = textElems.map(_el => _el.innerText.trim());
-				const types = textElems.map(function(_el, _index)
+				// Get all the lines, their text content, their type (title, plain text, task or subtask) and their completion status
+				const lines = textElems.map(function(_el, _index)
 				{
-					// The first text element is always the title of the note
-					if (_index === 0) return 'title';
-
-					// The task items have the attribute aria-label="list item" or aria-label="parent list item"
+					const text  = _el.innerText.trim();
 					const attrs = [..._el.attributes];
+
+					// The first text element is always the title of the note
+					if (_index === 0) return { text, type: 'title', completed: false };
+
+					let type      = 'plain';
+					let completed = false;
+
+					// The task items have the attribute "aria-label=list item" or "aria-label=parent list item"
 					if (attrs.some(_a => _a.nodeName === 'aria-label' && ['list item', 'parent list item'].includes(_a.nodeValue)))
 					{
+						type = 'task';
+
 						// The subtasks are shifted to the right
 						if (_el.parentElement.parentElement.style['margin-left'] !== '0px')
-							return 'subtask';
+							type = 'subtask';
 
-						return 'task';
+						// The containers of completed tasks are after a container with the attribute "aria-expanded=true"
+						console.log(text);
+						for (let sb = _el.parentElement.parentElement.parentElement.previousSibling; sb; sb = sb.previousSibling)
+						{
+							console.log(sb, [...sb.attributes]);
+							if ([...sb.attributes].some(_a => _a.nodeName === 'aria-expanded' && _a.nodeValue === 'true'))
+							{
+								completed = true;
+								break;
+							}
+						}
 					}
 
-					return 'plain';
-				});
+					return { text, type, completed };
+				})
+				// Remove the 'X Completed items' subheader
+				.filter(_line => !/Completed items?$/.test(_line.text));
 
 				// Format the contents accordingly
 				let formattedContents = '';
@@ -141,32 +159,30 @@
 				{
 					case 'md':
 						// Format each line according to its type
-						formattedContents = lines.map(function(_line, _index)
+						formattedContents = lines.map(function(_line)
 						{
-							const line = parseUrls(_line, 'md');
+							const text = parseUrls(_line.text, 'md');
 
-							switch (types[_index])
+							switch (_line.type)
 							{
-								case 'title':    return `# ${line}`;
-								case 'task':     return `* ${line}`;
-								case 'subtask':  return `  * ${line}`;
+								case 'title':    return `# ${text}`;
+								case 'task':     return `- [${_line.completed ? 'x' : ' '}] ${text}`;
+								case 'subtask':  return `  - [${_line.completed ? 'x' : ' '}] ${text}`;
+								default:         return text;
 							}
-
-							return line;
 						}).join('\n');
 						break;
 
 					case 'zim':
 						// Discard the title and format each line according to its type
-						formattedContents = lines.slice(1).map(function(_line, _index)
+						formattedContents = lines.slice(1).map(function(_line)
 						{
-							switch (types[_index + 1])
+							switch (_line.type)
 							{
-								case 'task':     return `[ ] ${_line}`;
-								case 'subtask':  return `\t[ ] ${_line}`;
+								case 'task':     return `[${_line.completed ? '*' : ' '}] ${_line.text}`;
+								case 'subtask':  return `\t[${_line.completed ? '*' : ' '}] ${_line.text}`;
+								default:         return _line.text;
 							}
-
-							return _line;
 						}).join('\n');
 						break;
 
@@ -174,37 +190,34 @@
 						// Format each line according to its type
 						formattedContents = lines.map(function(_line, _index)
 						{
-							const line = parseUrls(_line, 'html');
+							const text = parseUrls(_line.text, 'html');
 
-							switch (types[_index])
-							{
-								case 'title':
-									return `<h1>${line}</h1>`;
+							if (_line.type == 'title')
+								return `<h1>${text}</h1>`;
 
-								case 'task':
-								case 'subtask':
-									return `<input type="checkbox" id="task-${_index}">`
-									     + `<label for="task-${_index}">${line}</label>`;
-							}
+							if (['task', 'subtask'].includes(_line.type))
+								return `<input type="checkbox" id="task-${_index}"${_line.completed ? ' checked': ''}>`
+								     + `<label for="task-${_index}">${text}</label>`;
 
-							return `<p>${line}</p>`;
+							return `<p>${text}</p>`;
 						}).join('\n');
 						break;
 
 					case 'csv':
 						// Discard the title and join the lines with commas
-						formattedContents = lines.slice(1).join(',');
+						formattedContents = lines.slice(1).map(_line => _line.text).join(',');
 						break;
 
 					case 'plain':
 					default:
 						// Simply output all the lines one after the other
-						formattedContents = lines.join('\n');
+						formattedContents = lines.map(_line => _line.text).join('\n');
 						break;
 				}
 
 				// Copy the formatted contents of the note to the clipboard
 				copyToClipboard(formattedContents);
+				console.log(formattedContents);
 
 				// Close the context menu
 				_entry.parentElement.setAttribute('tabindex', -1);
