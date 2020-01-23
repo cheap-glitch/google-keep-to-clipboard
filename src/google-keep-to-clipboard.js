@@ -103,7 +103,7 @@
 			_entry.addEventListener('mouseleave', () => _entry.style.backgroundColor = 'transparent');
 			_entry.addEventListener('mouseenter', function()
 			{
-				_entry.style.backgroundColor = (getColorscheme() === 'light') ? '#ebebeb' : '#444547';
+				_entry.style.backgroundColor = (getColorscheme() == 'light') ? '#ebebeb' : '#444547';
 			});
 
 			/**
@@ -121,18 +121,18 @@
 					const attrs = [..._el.attributes];
 
 					// The first text element is always the title of the note
-					if (_index === 0) return { text, type: 'title', completed: false };
+					if (_index == 0) return { text, type: 'title', completed: false };
 
 					let type      = 'plain';
 					let completed = false;
 
 					// The task items have the attribute "aria-label=list item" or "aria-label=parent list item"
-					if (attrs.some(_a => _a.nodeName === 'aria-label' && ['list item', 'parent list item'].includes(_a.nodeValue)))
+					if (attrs.some(_a => _a.nodeName == 'aria-label' && ['list item', 'parent list item'].includes(_a.nodeValue)))
 					{
 						type = 'task';
 
 						// The subtasks are shifted to the right
-						if (_el.parentElement.parentElement.style['margin-left'] !== '0px')
+						if (_el.parentElement.parentElement.style['margin-left'] != '0px')
 							type = 'subtask';
 
 						// The containers of completed tasks are after a container with the attribute "aria-expanded=true"
@@ -140,7 +140,7 @@
 						for (let sb = _el.parentElement.parentElement.parentElement.previousSibling; sb; sb = sb.previousSibling)
 						{
 							console.log(sb, [...sb.attributes]);
-							if ([...sb.attributes].some(_a => _a.nodeName === 'aria-expanded' && _a.nodeValue === 'true'))
+							if ([...sb.attributes].some(_a => _a.nodeName == 'aria-expanded' && _a.nodeValue == 'true'))
 							{
 								completed = true;
 								break;
@@ -166,7 +166,7 @@
 							switch (_line.type)
 							{
 								case 'title':    return `# ${text}`;
-								case 'task':     return `- [${_line.completed ? 'x' : ' '}] ${text}`;
+								case 'task':     return `- [${_line.completed   ? 'x' : ' '}] ${text}`;
 								case 'subtask':  return `  - [${_line.completed ? 'x' : ' '}] ${text}`;
 								default:         return text;
 							}
@@ -179,7 +179,7 @@
 						{
 							switch (_line.type)
 							{
-								case 'task':     return `[${_line.completed ? '*' : ' '}] ${_line.text}`;
+								case 'task':     return `[${_line.completed   ? '*' : ' '}] ${_line.text}`;
 								case 'subtask':  return `\t[${_line.completed ? '*' : ' '}] ${_line.text}`;
 								default:         return _line.text;
 							}
@@ -196,7 +196,7 @@
 								return `<h1>${text}</h1>`;
 
 							if (['task', 'subtask'].includes(_line.type))
-								return `<input type="checkbox" id="task-${_index}"${_line.completed ? ' checked': ''}>`
+								return `<input type="checkbox" id="task-${_index}"${_line.completed ? ' checked' : ''}>`
 								     + `<label for="task-${_index}">${text}</label>`;
 
 							return `<p>${text}</p>`;
@@ -300,7 +300,7 @@
 			if (val === true) val = '';
 
 			// If the attribute value is an object (used to set the 'style' attribute)
-			else if (val === Object(val) && Object.prototype.toString.call(val) !== '[object Array]')
+			else if (val === Object(val) && Object.prototype.toString.call(val) != '[object Array]')
 			{
 				// Join the key-value pairs in a single string
 				val = Object.keys(val)
@@ -322,6 +322,6 @@
 	 */
 	function getColorscheme()
 	{
-		return document.getElementById('gb').style.cssText === 'background-color: rgb(255, 255, 255);' ? 'light' : 'dark';
+		return document.getElementById('gb').style.cssText == 'background-color: rgb(255, 255, 255);' ? 'light' : 'dark';
 	}
 })();

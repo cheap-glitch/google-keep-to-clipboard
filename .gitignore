@@ -1,4 +1,12 @@
+
+#
+# .gitignore
+#
+
+# Folders
 /build/
 /node_modules/
 
-.eslintrc.json
+# Build files
+*.zip
+/build-extension.old.sh

@@ -4,7 +4,7 @@
 	"name": "Google Keep To Clipboard",
 	"version": "1.2",
 	"description": "Copy the contents of your Google Keep notes to the clipboard in various formats.",
-	"applications":	{
+	"applications": {
 		"gecko": {
 			"id": "google-keep-to-clipboard--dev@cheap-glitch.org"
 		}
