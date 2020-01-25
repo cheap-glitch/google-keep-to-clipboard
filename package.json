@@ -1,4 +1,5 @@
 {
+  "private": true,
   "scripts": {
     "lint": "eslint src/*.js"
   },
