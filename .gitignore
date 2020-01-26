@@ -3,10 +3,9 @@
 # .gitignore
 #
 
-# Folders
-/build/
 /node_modules/
 
 # Build files
 *.zip
+/build/
 /build-extension.old.sh

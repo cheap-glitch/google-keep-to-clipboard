@@ -33,7 +33,7 @@
 	const menuHandles = [...document.querySelectorAll('div[role="toolbar"] div[aria-label="More"]')].slice(2);
 
 	// Add a click event handler on each menu handle to know which note is being targeted
-	menuHandles.forEach(_handle => _handle.addEventListener('click', () => targetNote = _handle.parentElement.parentElement.parentElement));
+	menuHandles.forEach(handle => handle.addEventListener('click', () => targetNote = handle.parentElement.parentElement.parentElement));
 
 	// Wait for the contextual menu to be created in the <body> element to insert the new entries in it
 	(new MutationObserver(function()
@@ -56,18 +56,18 @@
 		};
 
 		// Insert an entry for every format option
-		Object.keys(formats).forEach(_key => lastEntry.insertAdjacentElement('afterend', createNewMenuEntry(
+		Object.keys(formats).forEach(key => lastEntry.insertAdjacentElement('afterend', createNewMenuEntry(
 			{
 				'role':        'menuitem',
 				'class':       `google-keep-to-clipboard-submenu-entry ${lastEntry.className}`,
 				'style':       { 'user-select': 'none' },
-				'data-format': _key,
+				'data-format': key,
 			},
 			{
 				'class':       lastEntry.children.item(0).className,
 				'style':       { 'padding-left': '20px' }
 			},
-			formats[_key]
+			formats[key]
 		)));
 
 		// Insert the "header"
@@ -95,52 +95,52 @@
 		 * Add some event listeners on the new entries
 		 * -------------------------------------------------------------
 		 */
-		[...document.getElementsByClassName('google-keep-to-clipboard-submenu-entry')].forEach(function(_entry)
+		[...document.getElementsByClassName('google-keep-to-clipboard-submenu-entry')].forEach(function(entry)
 		{
 			/**
 			 * Change background color on hover
 			 */
-			_entry.addEventListener('mouseleave', () => _entry.style.backgroundColor = 'transparent');
-			_entry.addEventListener('mouseenter', function()
+			entry.addEventListener('mouseleave', () => entry.style.backgroundColor = 'transparent');
+			entry.addEventListener('mouseenter', function()
 			{
-				_entry.style.backgroundColor = (getColorscheme() == 'light') ? '#ebebeb' : '#444547';
+				entry.style.backgroundColor = (getColorscheme() == 'light') ? '#ebebeb' : '#444547';
 			});
 
 			/**
 			 * Copy the note contents on click
 			 */
-			_entry.addEventListener('click', function()
+			entry.addEventListener('click', function()
 			{
 				// Get all the elements in the note wrapper containing valuable text
 				const textElems = [...targetNote.getElementsByClassName('notranslate')];
 
 				// Get all the lines, their text content, their type (title, plain text, task or subtask) and their completion status
-				const lines = textElems.map(function(_el, _index)
+				const lines = textElems.map(function(el, index)
 				{
-					const text  = _el.innerText.trim();
-					const attrs = [..._el.attributes];
+					const text  = el.innerText.trim();
+					const attrs = [...el.attributes];
 
 					// The first text element is always the title of the note
-					if (_index == 0) return { text, type: 'title', completed: false };
+					if (index == 0) return { text, type: 'title', completed: false };
 
 					let type      = 'plain';
 					let completed = false;
 
 					// The task items have the attribute "aria-label=list item" or "aria-label=parent list item"
-					if (attrs.some(_a => _a.nodeName == 'aria-label' && ['list item', 'parent list item'].includes(_a.nodeValue)))
+					if (attrs.some(a => a.nodeName == 'aria-label' && ['list item', 'parent list item'].includes(a.nodeValue)))
 					{
 						type = 'task';
 
 						// The subtasks are shifted to the right
-						if (_el.parentElement.parentElement.style['margin-left'] != '0px')
+						if (el.parentElement.parentElement.style['margin-left'] != '0px')
 							type = 'subtask';
 
 						// The containers of completed tasks are after a container with the attribute "aria-expanded=true"
 						console.log(text);
-						for (let sb = _el.parentElement.parentElement.parentElement.previousSibling; sb; sb = sb.previousSibling)
+						for (let sb = el.parentElement.parentElement.parentElement.previousSibling; sb; sb = sb.previousSibling)
 						{
 							console.log(sb, [...sb.attributes]);
-							if ([...sb.attributes].some(_a => _a.nodeName == 'aria-expanded' && _a.nodeValue == 'true'))
+							if ([...sb.attributes].some(a => a.nodeName == 'aria-expanded' && a.nodeValue == 'true'))
 							{
 								completed = true;
 								break;
@@ -151,23 +151,23 @@
 					return { text, type, completed };
 				})
 				// Remove the 'X Completed items' subheader
-				.filter(_line => !/Completed items?$/.test(_line.text));
+				.filter(line => !/Completed items?$/.test(line.text));
 
 				// Format the contents accordingly
 				let formattedContents = '';
-				switch (_entry.getAttribute('data-format'))
+				switch (entry.getAttribute('data-format'))
 				{
 					case 'md':
 						// Format each line according to its type
-						formattedContents = lines.map(function(_line)
+						formattedContents = lines.map(function(line)
 						{
-							const text = parseUrls(_line.text, 'md');
+							const text = parseUrls(line.text, 'md');
 
-							switch (_line.type)
+							switch (line.type)
 							{
 								case 'title':    return `# ${text}`;
-								case 'task':     return `- [${_line.completed   ? 'x' : ' '}] ${text}`;
-								case 'subtask':  return `  - [${_line.completed ? 'x' : ' '}] ${text}`;
+								case 'task':     return `- [${line.completed   ? 'x' : ' '}] ${text}`;
+								case 'subtask':  return `  - [${line.completed ? 'x' : ' '}] ${text}`;
 								default:         return text;
 							}
 						}).join('\n');
@@ -175,29 +175,29 @@
 
 					case 'zim':
 						// Discard the title and format each line according to its type
-						formattedContents = lines.slice(1).map(function(_line)
+						formattedContents = lines.slice(1).map(function(line)
 						{
-							switch (_line.type)
+							switch (line.type)
 							{
-								case 'task':     return `[${_line.completed   ? '*' : ' '}] ${_line.text}`;
-								case 'subtask':  return `\t[${_line.completed ? '*' : ' '}] ${_line.text}`;
-								default:         return _line.text;
+								case 'task':     return `[${line.completed   ? '*' : ' '}] ${line.text}`;
+								case 'subtask':  return `\t[${line.completed ? '*' : ' '}] ${line.text}`;
+								default:         return line.text;
 							}
 						}).join('\n');
 						break;
 
 					case 'html':
 						// Format each line according to its type
-						formattedContents = lines.map(function(_line, _index)
+						formattedContents = lines.map(function(line, index)
 						{
-							const text = parseUrls(_line.text, 'html');
+							const text = parseUrls(line.text, 'html');
 
-							if (_line.type == 'title')
+							if (line.type == 'title')
 								return `<h1>${text}</h1>`;
 
-							if (['task', 'subtask'].includes(_line.type))
-								return `<input type="checkbox" id="task-${_index}"${_line.completed ? ' checked' : ''}>`
-								     + `<label for="task-${_index}">${text}</label>`;
+							if (['task', 'subtask'].includes(line.type))
+								return `<input type="checkbox" id="task-${index}"${line.completed ? ' checked' : ''}>`
+								     + `<label for="task-${index}">${text}</label>`;
 
 							return `<p>${text}</p>`;
 						}).join('\n');
@@ -205,13 +205,13 @@
 
 					case 'csv':
 						// Discard the title and join the lines with commas
-						formattedContents = lines.slice(1).map(_line => _line.text).join(',');
+						formattedContents = lines.slice(1).map(line => line.text).join(',');
 						break;
 
 					case 'plain':
 					default:
 						// Simply output all the lines one after the other
-						formattedContents = lines.map(_line => _line.text).join('\n');
+						formattedContents = lines.map(line => line.text).join('\n');
 						break;
 				}
 
@@ -220,8 +220,8 @@
 				console.log(formattedContents);
 
 				// Close the context menu
-				_entry.parentElement.setAttribute('tabindex', -1);
-				_entry.parentElement.style.display = 'none';
+				entry.parentElement.setAttribute('tabindex', -1);
+				entry.parentElement.style.display = 'none';
 			});
 		});
 	}))
@@ -249,7 +249,7 @@
 	/**
 	 * Copy a string into the system clipboard
 	 */
-	function copyToClipboard(_str)
+	function copyToClipboard(str)
 	{
 		// Create an invisible textarea containing the string to copy
 		const ta = createNewElement('textarea', {
@@ -258,7 +258,7 @@
 				left:      '-9999px',
 			},
 			readonly: true,
-		}, _str);
+		}, str);
 
 		// Add it to the DOM
 		document.body.appendChild(ta);
@@ -274,10 +274,10 @@
 	/**
 	 * Create a new menu entry (two <div>, one wrapping the other)
 	 */
-	function createNewMenuEntry(_wrapperAttrs, _innerAttrs, _text)
+	function createNewMenuEntry(wrapperAttrs, innerAttrs, text)
 	{
-		const wrapper = createNewElement('div', _wrapperAttrs);
-		const inner   = createNewElement('div', _innerAttrs, _text);
+		const wrapper = createNewElement('div', wrapperAttrs);
+		const inner   = createNewElement('div', innerAttrs, text);
 
 		wrapper.appendChild(inner);
 
@@ -287,14 +287,14 @@
 	/**
 	 * Create a new DOM element
 	 */
-	function createNewElement(_type, _attrs, _textContent = null)
+	function createNewElement(type, attrs, textContent = null)
 	{
-		const el = document.createElement(_type);
+		const el = document.createElement(type);
 
 		// Set the attributes
-		Object.keys(_attrs).forEach(function(_attr)
+		Object.keys(attrs).forEach(function(attr)
 		{
-			let val = _attrs[_attr];
+			let val = attrs[attr];
 
 			// If the attribute value is a boolean set to 'true', set it to an empty string
 			if (val === true) val = '';
@@ -304,15 +304,15 @@
 			{
 				// Join the key-value pairs in a single string
 				val = Object.keys(val)
-					.reduce((__acc, __key) => { __acc.push(`${__key}: ${val[__key]};`); return __acc; }, [])
+					.reduce((acc, key) => { acc.push(`${key}: ${val[key]};`); return acc; }, [])
 					.join(' ');
 			}
 
-			el.setAttribute(_attr, val);
+			el.setAttribute(attr, val);
 		});
 
 		// Set the text content
-		if (_textContent) el.textContent = _textContent;
+		if (textContent) el.textContent = textContent;
 
 		return el;
 	}
