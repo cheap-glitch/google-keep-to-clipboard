@@ -1,23 +1,23 @@
 {
-    "extends": "eslint:recommended",
+	"extends": "eslint:recommended",
 
-    "env": {
-        "browser": true,
-        "es6": true
-    },
+	"env": {
+		"es6":     true,
+		"browser": true
+	},
 
-    "parserOptions": {
-        "ecmaVersion": 2018
-    },
+	"parserOptions": {
+		"ecmaVersion": 2018
+	},
 
-    "plugins": [
-	    "smarter-tabs"
-    ],
+	"plugins": [
+		"smarter-tabs"
+	],
 
-    "rules": {
-	    "no-irregular-whitespace":  0,
-	    "no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
+	"rules": {
+		"no-irregular-whitespace":   0,
+		"no-mixed-spaces-and-tabs":  ["warn", "smart-tabs"],
 
-	    "smarter-tabs/smarter-tabs": "warn"
-    }
+		"smarter-tabs/smarter-tabs": "warn"
+	}
 }
