@@ -3,9 +3,8 @@
   "name": "google-keep-to-clipboard",
   "description": "A tiny browser extension to copy the contents of Google Keep notes to the clipboard in various formats.",
   "version": "1.2.0",
-  "license": "GPL-3.0-only",
+  "license": "LGPL-3.0-only",
   "author": "cheap glitch <cheap.glitch@gmail.com> (https://github.com/cheap-glitch)",
-  "main": "",
   "scripts": {
     "lint": "eslint '**/*.js'"
   },

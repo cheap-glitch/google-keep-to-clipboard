@@ -24,7 +24,7 @@ the note anywhere.
 See the full changelog [here](https://github.com/cheap-glitch/google-keep-to-clipboard/releases).
 
 ## License & credits
-This software is distributed under the [GNU GPL v3.0](https://spdx.org/licenses/GPL-3.0.html).
+This software is distributed under the [GNU LGPL 3.0](https://spdx.org/licenses/LGPL-3.0.html).
 
 The SVG icon is made from icons by [Icons8](https://icons8.com/icons) and [Pixel
 Perfect](https://www.flaticon.com/authors/pixel-perfect).
