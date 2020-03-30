@@ -1,6 +1,6 @@
 <img align="right" src="https://raw.githubusercontent.com/cheap-glitch/google-keep-to-clipboard/master/docs/icon.png" alt="Google Keep To Clipboard logo">
 
-# google-keep-to-clipboard
+# Google Keep To Clipboard
 
 **Google Keep To Clipboard** is a  tiny browser extension for Firefox. It allows
 you  to copy  the contents  of any  note from  Google Keep  to the  clipboard in
@@ -24,7 +24,7 @@ the note anywhere.
 See the full changelog [here](https://github.com/cheap-glitch/google-keep-to-clipboard/releases).
 
 ## License & credits
-This software is distributed under the [GNU LGPL 3.0](https://spdx.org/licenses/LGPL-3.0.html).
+This software is distributed under the [GNU LGPL 3.0](https://spdx.org/licenses/LGPL-3.0-only.html).
 
 The SVG icon is made from icons by [Icons8](https://icons8.com/icons) and [Pixel
 Perfect](https://www.flaticon.com/authors/pixel-perfect).
