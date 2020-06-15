@@ -5,8 +5,8 @@
  * A  browser extension  to copy  the  contents of  Google Keep  notes into  the
  * clipoard in various formats.
  *
- * This software is distributed under the GNU LGPL 3.0
  * Copyright (c) 2019-present, cheap glitch
+ * This software is distributed under the Mozilla Public License 2.0
  */
 
 "use strict";
