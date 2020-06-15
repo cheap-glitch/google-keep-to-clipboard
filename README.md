@@ -1,4 +1,4 @@
-<img align="right" src="https://raw.githubusercontent.com/cheap-glitch/google-keep-to-clipboard/master/docs/icon.png" alt="Google Keep To Clipboard logo">
+<img align="right" src="https://raw.githubusercontent.com/cheap-glitch/google-keep-to-clipboard/main/docs/icon.png" alt="Google Keep To Clipboard logo">
 
 # Google Keep To Clipboard
 
@@ -15,7 +15,7 @@ Once the extension is  installed, simply head to the Google  Keep page and hover
 on the bottom  of a note to make  the toolbar appear. Click on  the three little
 dots to open a contextual menu.
 
-![Demo screenshot](https://raw.githubusercontent.com/cheap-glitch/google-keep-to-clipboard/master/docs/screenshot-dark.png)
+![Demo screenshot](https://raw.githubusercontent.com/cheap-glitch/google-keep-to-clipboard/main/docs/screenshot-dark.png)
 
 Click on the format  you want, and that's it! You can now  paste the contents of
 the note anywhere.
