@@ -1,6 +1,8 @@
 <img align="right" src="https://raw.githubusercontent.com/cheap-glitch/google-keep-to-clipboard/main/docs/icon.png" alt="Google Keep To Clipboard logo">
 
 # Google Keep To Clipboard
+![license badge](https://badgen.net/github/license/cheap-glitch/google-keep-to-clipboard?color=green)
+![latest release badge](https://badgen.net/github/release/cheap-glitch/google-keep-to-clipboard?color=green)
 
 **Google Keep To Clipboard** is a  tiny browser extension for Firefox. It allows
 you  to copy  the contents  of any  note from  Google Keep  to the  clipboard in
