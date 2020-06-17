@@ -2,8 +2,8 @@
 /**
  * google-keep-to-clipboard
  *
- * A  browser extension  to copy  the  contents of  Google Keep  notes into  the
- * clipoard in various formats.
+ * A  tiny browser extension to  copy the contents  of Google Keep notes  to the
+ * clipboard in various formats.
  *
  * Copyright (c) 2019-present, cheap glitch
  * This software is distributed under the Mozilla Public License 2.0
@@ -16,11 +16,9 @@
 	let targetNote = null;
 	let entryAdded = false;
 
-	// Get all the context menu handles (the three little dots in the toolbar of each note)
-	const menuHandles = [...document.querySelectorAll('div[role="toolbar"] div[aria-label="More"]')].slice(2);
-
-	// Add a click event handler on each menu handle to know which note is being targeted
-	menuHandles.forEach(handle => handle.addEventListener('click', () => targetNote = handle.parentElement.parentElement.parentElement));
+	// Install the listeners on the context menu buttons and update them when new ones are created
+	updateContextButtonsListeners();
+	(new MutationObserver(updateContextButtonsListeners)).observe(document.body, { childList: true });
 
 	// Wait for the contextual menu to be created in the <body> element to insert the new entries in it
 	(new MutationObserver(function()
@@ -35,24 +33,24 @@
 		 * -------------------------------------------------------------
 		 */
 		const formats = {
-			csv:    'CSV',
-			html:   'HTML',
-			zim:    'Zim markup',
-			md:     'Markdown',
-			plain:  'Plain text',
+			csv:   'CSV',
+			html:  'HTML',
+			zim:   'Zim markup',
+			md:    'Markdown',
+			plain: 'Plain text',
 		};
 
 		// Insert an entry for every format option
 		Object.keys(formats).forEach(key => lastEntry.insertAdjacentElement('afterend', createNewMenuEntry(
 			{
-				'role':        'menuitem',
-				'class':       `google-keep-to-clipboard-submenu-entry ${lastEntry.className}`,
-				'style':       { 'user-select': 'none' },
+				role:          'menuitem',
+				class:         `google-keep-to-clipboard-submenu-entry ${lastEntry.className}`,
+				style:         { 'user-select': 'none' },
 				'data-format': key,
 			},
 			{
-				'class':       lastEntry.children.item(0).className,
-				'style':       { 'padding-left': '20px' }
+				class:         lastEntry.children.item(0).className,
+				style:         { 'padding-left': '20px' }
 			},
 			formats[key]
 		)));
@@ -60,20 +58,18 @@
 		// Insert the "header"
 		lastEntry.insertAdjacentElement('afterend', createNewMenuEntry(
 			{
-				'role':  'menuitem',
-				'class': lastEntry.className,
-				'style': {
-					'padding':      0,
-					'border':       'none',
-					'cursor':       'default',
-					'user-select':  'none',
+				role:  'menuitem',
+				class: lastEntry.className,
+				style: {
+					padding:       0,
+					border:        'none',
+					cursor:        'default',
+					'user-select': 'none',
 				}
 			},
 			{
-				'class': lastEntry.children.item(0).className,
-				'style': {
-					'padding': '5px 10px 5px 17px'
-				}
+				class: lastEntry.children.item(0).className,
+				style: { padding: '5px 10px 5px 17px' },
 			},
 			'Copy to clipboard as…'
 		));
@@ -88,10 +84,7 @@
 			 * Change background color on hover
 			 */
 			entry.addEventListener('mouseleave', () => entry.style.backgroundColor = 'transparent');
-			entry.addEventListener('mouseenter', function()
-			{
-				entry.style.backgroundColor = (getColorscheme() == 'light') ? '#ebebeb' : '#444547';
-			});
+			entry.addEventListener('mouseenter', () => entry.style.backgroundColor = (getColorscheme() == 'light') ? '#ebebeb' : '#444547');
 
 			/**
 			 * Copy the note contents on click
@@ -113,7 +106,7 @@
 					let type      = 'plain';
 					let completed = false;
 
-					// The task items have the attribute "aria-label=list item" or "aria-label=parent list item"
+					// The task items have the attribute `aria-label=list item` or `aria-label=parent list item`
 					if (attrs.some(a => a.nodeName == 'aria-label' && ['list item', 'parent list item'].includes(a.nodeValue)))
 					{
 						type = 'task';
@@ -122,11 +115,9 @@
 						if (el.parentElement.parentElement.style['margin-left'] != '0px')
 							type = 'subtask';
 
-						// The containers of completed tasks are after a container with the attribute "aria-expanded=true"
-						console.log(text);
+						// The containers of completed tasks are after a container with the attribute `aria-expanded=true`
 						for (let sb = el.parentElement.parentElement.parentElement.previousSibling; sb; sb = sb.previousSibling)
 						{
-							console.log(sb, [...sb.attributes]);
 							if ([...sb.attributes].some(a => a.nodeName == 'aria-expanded' && a.nodeValue == 'true'))
 							{
 								completed = true;
@@ -137,7 +128,7 @@
 
 					return { text, type, completed };
 				})
-				// Remove the 'X Completed items' subheader
+				// Remove the "X Completed items" subheader
 				.filter(line => !/Completed items?$/.test(line.text));
 
 				// Format the contents accordingly
@@ -152,10 +143,10 @@
 
 							switch (line.type)
 							{
-								case 'title':    return `# ${text}`;
-								case 'task':     return `- [${line.completed   ? 'x' : ' '}] ${text}`;
-								case 'subtask':  return `  - [${line.completed ? 'x' : ' '}] ${text}`;
-								default:         return text;
+								case 'title':   return `# ${text}`;
+								case 'task':    return `- [${line.completed   ? 'x' : ' '}] ${text}`;
+								case 'subtask': return `  - [${line.completed ? 'x' : ' '}] ${text}`;
+								default:        return text;
 							}
 						}).join('\n');
 						break;
@@ -166,9 +157,9 @@
 						{
 							switch (line.type)
 							{
-								case 'task':     return `[${line.completed   ? '*' : ' '}] ${line.text}`;
-								case 'subtask':  return `\t[${line.completed ? '*' : ' '}] ${line.text}`;
-								default:         return line.text;
+								case 'task':    return `[${line.completed   ? '*' : ' '}] ${line.text}`;
+								case 'subtask': return `\t[${line.completed ? '*' : ' '}] ${line.text}`;
+								default:        return line.text;
 							}
 						}).join('\n');
 						break;
@@ -204,7 +195,8 @@
 
 				// Copy the formatted contents of the note to the clipboard
 				copyToClipboard(formattedContents);
-				console.log(formattedContents);
+				console.info('Copied following text into the clipboard:');
+				console.info(formattedContents);
 
 				// Close the context menu
 				entry.parentElement.setAttribute('tabindex', -1);
@@ -212,10 +204,30 @@
 			});
 		});
 	}))
-	.observe(document.body, {
-		childList: true,
-		subtree: true
-	});
+	.observe(document.body, { childList: true, });
+
+	/**
+	 * Helpers
+	 * ---------------------------------------------------------------------
+	 */
+
+	function updateContextButtonsListeners()
+	{
+		/**
+		 * Get all the context menu buttons in the DOM (the three little dots in the toolbar of each note)
+		 * Discard the first two as they are part of the general UI
+		 */
+		[...document.querySelectorAll('div[role="toolbar"] > div[aria-label="More"]')].slice(2)
+			// Add a click event handler on each menu handle to know which note is being targeted
+			.forEach(function(handle)
+			{
+				// Don't add the listener twice
+				if (!!handle.dataset.listenerAdded) return;
+
+				handle.addEventListener('click', () => targetNote = handle.parentElement.parentElement.parentElement);
+				handle.dataset.listenerAdded = true;
+			});
+	}
 
 	/**
 	 * Parse the URLs contained in a string into a specific format and return the modified string
@@ -226,10 +238,9 @@
 
 		switch (format)
 		{
-			case 'html':  return str.replace(urls, '<a href="$&">$&</a>');
-			case 'md':    return str.replace(urls, '[$&]($&)');
-
-			default:      return str;
+			case 'html': return str.replace(urls, '<a href="$&">$&</a>');
+			case 'md':   return str.replace(urls, '[$&]($&)');
+			default:     return str;
 		}
 	}
 
@@ -241,8 +252,8 @@
 		// Create an invisible textarea containing the string to copy
 		const ta = createNewElement('textarea', {
 			style: {
-				position:  'absolute',
-				left:      '-9999px',
+				position: 'absolute',
+				left:     '-9999px',
 			},
 			readonly: true,
 		}, str);
@@ -283,7 +294,7 @@
 		{
 			let val = attrs[attr];
 
-			// If the attribute value is a boolean set to 'true', set it to an empty string
+			// If the attribute value is a boolean set to `true`, set it to an empty string
 			if (val === true) val = '';
 
 			// If the attribute value is an object (used to set the 'style' attribute)
@@ -305,7 +316,7 @@
 	}
 
 	/**
-	 * Return the current colorscheme ('dark' or 'light')
+	 * Return the current colorscheme of the web app (`dark` or `light`)
 	 */
 	function getColorscheme()
 	{
