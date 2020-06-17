@@ -9,18 +9,20 @@
 			"id": "google-keep-to-clipboard--dev@cheap-glitch.org"
 		}
 	},
-	"icons": {
-		"48": "icon.svg",
-		"96": "icon.svg"
-	},
 
 	"developer" : {
 		"name": "cheap glitch",
 		"url": "https://github.com/cheap-glitch"
 	},
 
+	"icons": {
+		"48": "icons/icon.svg",
+		"96": "icons/icon.svg"
+	},
+
 	"content_scripts": [{
 		"matches": ["*://keep.google.com/*"],
-		"js": ["google-keep-to-clipboard.js"]
+		"js": ["src/google-keep-to-clipboard.js"]
 	}]
+
 }
