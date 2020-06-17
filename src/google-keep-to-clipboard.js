@@ -222,7 +222,7 @@
 			.forEach(function(handle)
 			{
 				// Don't add the listener twice
-				if (!!handle.dataset.listenerAdded) return;
+				if (handle.dataset.listenerAdded) return;
 
 				handle.addEventListener('click', () => targetNote = handle.parentElement.parentElement.parentElement);
 				handle.dataset.listenerAdded = true;
