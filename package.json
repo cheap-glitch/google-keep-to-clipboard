@@ -8,21 +8,21 @@
   "scripts": {
     "build": "node build.js",
     "lint": "run-s 'lint:*'",
-    "lint:js": "eslint '**/*.js'",
+    "lint:js": "eslint . --ext .js --ignore-path .gitignore",
     "lint:webext": "web-ext lint",
     "serve": "cross-env GTK_THEME=Numix:light web-ext run --firefox-profile dev --keep-profile-changes --url about:debugging#/runtime/this-firefox"
   },
   "devDependencies": {
-    "cross-env": "^7.0.2",
+    "cross-env": "^7.0.3",
     "cross-zip": "^4.0.0",
-    "eslint": "^7.13.0",
+    "eslint": "^7.15.0",
     "eslint-plugin-smarter-tabs": "^1.1.2",
     "fs-extra": "^9.0.1",
     "html-minifier": "^4.0.0",
     "klaw-sync": "^6.0.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
-    "terser": "^5.3.8",
-    "web-ext": "^5.3.0"
+    "terser": "^5.5.1",
+    "web-ext": "^5.4.1"
   }
 }
