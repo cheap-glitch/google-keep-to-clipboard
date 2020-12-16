@@ -1,0 +1,20 @@
+{
+  "files": ["./src/index.ts"],
+  "compilerOptions": {
+    "outDir":                     "./build",
+    "module":                     "none",
+    "target":                     "es2018",
+    "lib":                        ["dom", "es2019"],
+    "strict":                     true,
+    "esModuleInterop":            true,
+		"noEmitOnError":              true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedParameters":         true,
+    "downlevelIteration":         true,
+    "noImplicitAny":              true,
+    "noImplicitReturns":          true,
+    "noImplicitThis":             true,
+    "noUnusedLocals":             true,
+    "removeComments":             true
+  }
+}

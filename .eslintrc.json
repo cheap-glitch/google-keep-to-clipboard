@@ -1,9 +1,8 @@
 {
-	"extends": "eslint:recommended",
+  "root": true,
 
 	"env": {
 		"es6":     true,
-    "node":    true,
 		"browser": true
 	},
 
@@ -12,15 +11,19 @@
 	},
 
 	"plugins": [
+    "@typescript-eslint",
 		"smarter-tabs"
 	],
 
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+
 	"rules": {
     "brace-style":               ["warn", "1tbs", { "allowSingleLine": true }],
-
 		"no-irregular-whitespace":   0,
 		"no-mixed-spaces-and-tabs":  ["warn", "smart-tabs"],
-
 		"smarter-tabs/smarter-tabs": "warn"
 	}
 }

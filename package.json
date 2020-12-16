@@ -6,13 +6,14 @@
   "license": "MPL-2.0",
   "author": "cheap glitch <cheap.glitch@gmail.com> (https://github.com/cheap-glitch)",
   "scripts": {
-    "build": "node build.js",
+    "build": "tsc",
     "lint": "run-s 'lint:*'",
-    "lint:js": "eslint . --ext .js --ignore-path .gitignore",
+    "lint:js": "eslint . --ext .ts --ignore-path .gitignore",
     "lint:webext": "web-ext lint",
     "serve": "cross-env GTK_THEME=Numix:light web-ext run --firefox-profile dev --keep-profile-changes --url about:debugging#/runtime/this-firefox"
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
     "cross-env": "^7.0.3",
     "cross-zip": "^4.0.0",
     "eslint": "^7.15.0",
@@ -23,6 +24,7 @@
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
     "terser": "^5.5.1",
+    "typescript": "^4.1.3",
     "web-ext": "^5.4.1"
   }
 }

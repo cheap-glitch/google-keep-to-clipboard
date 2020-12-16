@@ -1,10 +1,12 @@
+# npm
+.npmrc
+node_modules
+npm-debug.log
 
-#
-# .gitignore
-#
-
-# NPM
-/node_modules/
+# Code coverage
+.codecov.yml
+.nyc_output
 
 # Build artifacts
+/build/
 *.zip
